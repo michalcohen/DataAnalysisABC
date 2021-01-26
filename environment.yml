@@ -1,0 +1,12 @@
+name: abc
+dependencies:
+    - python>=3.8
+    - numpy
+    - jupyterlab
+    - matplotlib
+    - jupyter
+    - pandas
+    - tqdm
+    - scipy
+    - seaborn
+    - pip
