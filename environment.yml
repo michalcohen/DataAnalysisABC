@@ -9,4 +9,5 @@ dependencies:
     - tqdm
     - scipy
     - seaborn
+    - ipycytoscape
     - pip
