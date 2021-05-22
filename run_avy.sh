@@ -7,7 +7,7 @@ check_dir(){
 	done
 }
 
-for dir in ~/extavy/beem/*/
+for dir in ~/beem/*/
 do
 	check_dir ${dir} &
 	#echo "${dir}"
