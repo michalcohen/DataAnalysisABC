@@ -1,14 +1,6 @@
 import os
 
-dirname = "../beem"
-frames_list = []  # [os.path.join(dirname, filename) for filename in os.listdir(dirname) if filename.endswith(".txt")]
-for subdir in os.listdir(dirname):
-    if subdir.startswith("results"):
-        continue
-    frames_list += set(
-        [os.path.join(dirname, subdir, filename) for filename in os.listdir(os.path.join(dirname, subdir)) if
-         filename.endswith(".txt")])
-max_pool = 12
+files = []
 keys = ["Frames", "Invar", "Pdr_solve", "blockCube", "ensureFrames", "ensureFrames_Invar", "generalize", "pushClauses",
         "pushClauses.Pdr_ManCheckCube", "run", "solverAddClause"]
 
@@ -34,11 +26,9 @@ def get_data_from_file(filename):
         return last_level, proof_count, result, d
 
 
-def process_aig(f):
-    if f.endswith("_q.txt"):
-        return
-    base_name = os.path.splitext(f)[0]
-    f_q = base_name + "_q.txt"
+def process_aig(f_q):
+    base_name = os.path.splitext(f_q)[0]
+    f = base_name[:base_name.rindex("_q")] + ".txt"
     if os.path.isfile(f) and os.path.isfile(f_q):
         try:
             last_level_no_q, proof_count_no_q, res_no_q, d_no_q = get_data_from_file(f)
@@ -74,14 +64,25 @@ def process_aig(f):
         except KeyError:
             print("wrong keys: " + f_q)
             return
-        # return (proof_count_q / proof_count_no_q)
-        # return (last_level_q / last_level_no_q)
-        # return d_no_q, d_q
 
 
-pool_outputs = [process_aig(v) for v in frames_list]
-pool_outputs = [output for output in pool_outputs if output is not None]
 
-lines = [",".join(["FileName", "Result"] + keys + [key + "_q" for key in keys] + [key + "_r" for key in keys])] + pool_outputs
-with open("tmp.csv", 'w') as f:
-    f.write("\n".join(lines))
+
+def scan_directory(dir_name):
+    for entry in os.scandir(dir_name):
+        if entry.is_file() and entry.path.endswith("_fixed_q.txt"):
+            files.append(entry.path)
+        elif entry.is_dir():
+            scan_directory(entry.path)
+
+def main(root):
+    scan_directory(root)
+    pool_outputs = [process_aig(v) for v in files]
+    pool_outputs = [output for output in pool_outputs if output is not None]
+
+    lines = [",".join(["FileName", "Result"] + keys + [key + "_q" for key in keys] + [key + "_r" for key in keys])] + pool_outputs
+    with open("tmp.csv", 'w') as f:
+        f.write("\n".join(lines))
+
+if __name__ == "__main__":
+    main("../hwmcc20")

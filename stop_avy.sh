@@ -1,0 +1,1 @@
+ps -C avypdr -o pid=|xargs kill -9
