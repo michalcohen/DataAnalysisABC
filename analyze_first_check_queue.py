@@ -66,14 +66,13 @@ def process_aig(f_q):
             return
 
 
-
-
 def scan_directory(dir_name):
     for entry in os.scandir(dir_name):
         if entry.is_file() and entry.path.endswith("_fixed_q.txt"):
             files.append(entry.path)
         elif entry.is_dir():
             scan_directory(entry.path)
+
 
 def main(root):
     scan_directory(root)
@@ -83,6 +82,7 @@ def main(root):
     lines = [",".join(["FileName", "Result"] + keys + [key + "_q" for key in keys] + [key + "_r" for key in keys])] + pool_outputs
     with open("tmp.csv", 'w') as f:
         f.write("\n".join(lines))
+
 
 if __name__ == "__main__":
     main("../hwmcc20")
